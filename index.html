@@ -8,13 +8,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-    <div style="display: none;">
-        <h1>Lista simple Mario kart</h1>
-        <input type = "button" onclick = "render()" value = "Render">   
-        
-        <div id="lienzo"></div>
-    </div>
-
     <!-- Inicio Login -->
     <div id="divLogin" style="display:flex; justify-content: center; align-items: center; margin-top: 10%;">
         <form>
@@ -45,6 +38,22 @@
         <input class="my-2" type="file" id="file-actores" accept=".json" onchange='openFile(event)'>
         <h4>Carga categorías</h4>
         <input class="my-2" type="file" id="file-categorias" accept=".json" onchange='openFile(event)'>
+
+        <h2>Estructuras</h2>
+            <div>
+                <button type="button" class="btn btn-info" onclick = "render()">Grafo películas</button>
+                <button type="button" class="btn btn-info" onclick = "render()">Grafo clientes</button>
+                <button type="button" class="btn btn-info" onclick = "render()">Grafo actores</button>
+                <button type="button" class="btn btn-info" onclick = "render()">Grafo categorías</button>
+                <button type="button" class="btn btn-warning" onclick = "downloadimage()">Descargar grafo</button>
+            </div>
+        <div id="lienzo" class="overflow-auto my-3" style="border-style: solid;"></div>
+    </div>
+
+    <!-- Inicio Cliente -->
+    <div id="divCliente" style="display: none; justify-content: center; align-items: center; margin-top: 3%;">
+        <button type="button" class="btn btn-danger ml-auto" onclick = "cerrarSesion()">Cerrar sesion</button>
+        <h1>Cliente</h1>
     </div>
 
 
@@ -59,5 +68,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript" src="./Index.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <script type="text/javascript">
+
+        function downloadimage() {
+            var container = document.getElementById("lienzo");
+            html2canvas(container, { allowTaint: true }).then(function (canvas) {
+
+                var link = document.createElement("a");
+                document.body.appendChild(link);
+                link.download = "grafo.png";
+                link.href = canvas.toDataURL();
+                link.target = '_blank';
+                link.click();
+            });
+        }
+
+    </script>
 </body>
 </html>

@@ -1,21 +1,31 @@
-
 // Login
 function login() {  
     var usuario = document.getElementById("exampleInputEmail1").value;
     var password = document.getElementById("exampleInputPassword1").value;
     var checked = document.getElementById("exampleCheck1").checked;
-    if(usuario == "" && password =="" && checked){
-        console.log("Entra admin");
-        document.getElementById("divLogin").style.display = "none";
-        document.getElementById("divAdmin").style.display = "grid";
+    if(checked){
+        if(usuario == "" && password ==""){
+            document.getElementById("divLogin").style.display = "none";
+            document.getElementById("divCliente").style.display = "none";
+            document.getElementById("divAdmin").style.display = "grid";
+        }else{
+            alert("Password incorrecta administrador");
+        }
     }else{
-        console.log("Busca usuario");
+        if(listaClientes.login(usuario,password)){
+            document.getElementById("divLogin").style.display = "none";
+            document.getElementById("divCliente").style.display = "grid";
+            document.getElementById("divAdmin").style.display = "none";
+        }else{
+            alert("Password incorrecta cliente");
+        }
     }
 }
 
 function cerrarSesion() {
     document.getElementById("divLogin").style.display = "flex";
     document.getElementById("divAdmin").style.display = "none";
+    document.getElementById("divCliente").style.display = "none";
 }
 // Cargar archivos
 function openFile(event) {
@@ -25,7 +35,8 @@ function openFile(event) {
       var text = reader.result;
       var json = JSON.parse(text);
       json.forEach(function(cliente) {
-        console.log(cliente);
+        var nuevoCliente = new Cliente(cliente.dpi, cliente.nombre_completo, cliente.nombre_usuario, cliente.correo, cliente.contrasenia, cliente.telefono);
+        listaClientes.agregarClientes(nuevoCliente)
     });
     };
     reader.readAsText(input.files[0]);
@@ -43,14 +54,26 @@ class Listasimple{
     constructor() {
         this.cabecera = null
     }
-    agregarPersonajes(_objetoPersonaje) {
+    agregarClientes(_objetoPersonaje) {
         var tempo = new Nodo(_objetoPersonaje)
         tempo.siguiente = this.cabecera
         this.cabecera = tempo
     }
 
+    login(_nombre_usuario, _contrasenia){
+        var temporal = this.cabecera
+        while (temporal != null) {
+            if(_nombre_usuario == temporal.PersonajeMK.nombre_usuario && _contrasenia == temporal.PersonajeMK.contrasenia){
+                return true;
+            }
+            temporal.PersonajeMK.nombre_usuario
+            temporal = temporal.siguiente         
+        }
+        return false;
+    }
+
     graficarlistaPersonajesMarioKart(){
-        var codigodot = "digraph G{\nlabel=\" Mario kart \";\nnode [shape=box];\n graph [rankdir = LR];";
+        var codigodot = "digraph G{\nlabel=\" Clientes \";\nnode [shape=box];\n graph [rankdir = LR];";
         var temporal = this.cabecera
         var conexiones ="";
         var nodos ="";
@@ -68,7 +91,6 @@ class Listasimple{
         codigodot += nodos+"\n"
         codigodot += "//agregando conexiones o flechas\n"
         codigodot += "{\n"+conexiones+"\n}\n}"
-        //console.log(codigodot)
         d3.select("#lienzo").graphviz()
             .width(900)
             .height(500)
@@ -88,5 +110,7 @@ class Cliente{
 }
 
 function render() {  
-    listamarioKart.graficarlistaPersonajesMarioKart()    
+    listaClientes.graficarlistaPersonajesMarioKart()    
 }
+
+var listaClientes = new Listasimple();
