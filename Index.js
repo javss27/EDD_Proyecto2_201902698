@@ -27,8 +27,24 @@ function cerrarSesion() {
     document.getElementById("divAdmin").style.display = "none";
     document.getElementById("divCliente").style.display = "none";
 }
+
+function vistaUsuario(value) {
+    if(value == "peliculas"){
+        document.getElementById("divActores").style.display = "none";
+        document.getElementById("divPelis").style.display = "block";
+        document.getElementById("divCategorias").style.display = "none";
+    }else if(value == "actores"){
+        document.getElementById("divActores").style.display = "block";
+        document.getElementById("divPelis").style.display = "none";
+        document.getElementById("divCategorias").style.display = "none";
+    }else if(value == "categorias"){
+        document.getElementById("divActores").style.display = "none";
+        document.getElementById("divPelis").style.display = "none";
+        document.getElementById("divCategorias").style.display = "block";
+    }
+}
 // Cargar archivos
-function openFile(event) {
+function openFileSimple(event) {
     var input = event.target;
     var reader = new FileReader();
     reader.onload = function() {
@@ -42,8 +58,38 @@ function openFile(event) {
     reader.readAsText(input.files[0]);
 }
 
+function openFileAVL(event) {
+    var input = event.target;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var text = reader.result;
+      var json = JSON.parse(text);
+      json.forEach(function(peli) {
+        var nuevaPeli = new Pelicula(peli.id_pelicula, peli.nombre_pelicula, peli.descripcion, peli.puntuacion_star, peli.precion_Q, peli.paginas, peli.categoria);
+        arbolavl.insertar(nuevaPeli)
+    });
+    arbolavl.inorden();
+    };
+    reader.readAsText(input.files[0]);
+}
+
+function openFileABB(event) {
+    var input = event.target;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var text = reader.result;
+      var json = JSON.parse(text);
+      json.forEach(function(actor) {
+        var nuevoActor = new Actor(actor.dni, actor.nombre_actor, actor.correo, actor.descripcion);
+        arbolabb.insertar(nuevoActor)
+    });
+    arbolabb.inorden();
+    };
+    reader.readAsText(input.files[0]);
+}
+
 //Lista simple
-class Nodo {
+class NodoSimple {
     constructor(_PersonajeMK) {
         this.PersonajeMK = _PersonajeMK
         this.siguiente = null
@@ -55,7 +101,7 @@ class Listasimple{
         this.cabecera = null
     }
     agregarClientes(_objetoPersonaje) {
-        var tempo = new Nodo(_objetoPersonaje)
+        var tempo = new NodoSimple(_objetoPersonaje)
         tempo.siguiente = this.cabecera
         this.cabecera = tempo
     }
@@ -109,8 +155,375 @@ class Cliente{
     }
 }
 
-function render() {  
+function renderSimple() {  
     listaClientes.graficarlistaPersonajesMarioKart()    
 }
 
+//Arbol AVL
+class NodoAVL{
+    constructor(_valor){
+        this.valor=_valor;
+        this.izquierda = null;
+        this.derecha = null;
+        this.altura = 0;
+    }
+}
+
+class AVL{
+    constructor(){
+        this.raiz = null;
+    }
+    //maximo
+    MAXIMO(valor1,valor2){
+        if(valor1>valor2) return valor1;
+        return valor2;
+    }
+    //altura del arbol
+    altura(nodo){
+        if(nodo == null) return -1;
+        return nodo.altura;
+    }
+    //insertar
+    insertar(valor){
+        this.raiz = this.add(valor,this.raiz)
+
+    }
+    //insertar recursivo
+    add(valor, nodo){
+        if(nodo == null) return new NodoAVL(valor);
+        else{
+            if(valor.nombre_pelicula < nodo.valor.nombre_pelicula){
+                nodo.izquierda = this.add(valor, nodo.izquierda)
+                if(this.altura(nodo.derecha)-this.altura(nodo.izquierda) == -2){
+                    //programar los casos 
+                    //rsi
+                    if(valor.nombre_pelicula < nodo.izquierda.valor.nombre_pelicula){
+                        nodo = this.rotacionizquierda(nodo);
+                    }//rdi}
+                    else{
+                        nodo = this.Rotaciondobleizquierda(nodo);
+                    }
+                    
+                }
+            }else if(valor.nombre_pelicula > nodo.valor.nombre_pelicula){
+                nodo.derecha = this.add(valor, nodo.derecha);
+                if(this.altura(nodo.derecha)-this.altura(nodo.izquierda)== 2){
+                    //otros dos casos
+                    //rotacion simple derecha
+                    if(valor.nombre_pelicula > nodo.derecha.valor.nombre_pelicula){
+                        nodo = this.rotacionderecha(nodo);
+                    }else{
+                        nodo = this.Rotaciondoblederecha(nodo);
+                    }
+                    //rotacion doble derecha
+                }
+            }else{
+                nodo.valor = valor;
+            }
+        }
+        nodo.altura = this.MAXIMO(this.altura(nodo.izquierda),this.altura(nodo.derecha))+1
+        return nodo;
+    }
+
+
+    //rotacion simple izquierda
+    rotacionizquierda(nodo){
+        var aux = nodo.izquierda;
+        nodo.izquierda = aux.derecha;
+        aux.derecha = nodo;
+        //calculo de nueva altura
+        nodo.altura = this.MAXIMO(this.altura(nodo.derecha),this.altura(nodo.izquierda))+1;
+        aux.altura = this.MAXIMO(this.altura(nodo.izquierda), nodo.altura)+1;
+        return aux;
+    }
+    //rotacion simple derecha
+    rotacionderecha(nodo){
+        var aux = nodo.derecha;
+        nodo.derecha = aux.izquierda;
+        aux.izquierda = nodo;
+        //calcular de nuevo altura
+        nodo.altura = this.MAXIMO(this.altura(nodo.derecha),this.altura(nodo.izquierda))+1;
+        aux.altura = this.MAXIMO(this.altura(nodo.derecha),nodo.altura)+1;
+        return aux;
+    }
+    //rotacion dobles derecha
+    Rotaciondoblederecha(nodo){
+        nodo.derecho = this.rotacionizquierda(nodo.derecho);
+        return this.rotacionderecha(nodo);
+    }
+
+    //rotaciones dobles
+    Rotaciondobleizquierda(nodo){
+        nodo.izquierda = this.rotacionderecha(nodo.izquierda);
+        return this.rotacionizquierda(nodo);
+    }
+
+    //inorden
+    inorden(des){
+        var parent = document.getElementById("containerPelis");
+        while (parent.firstChild) {
+            parent.firstChild.remove();
+        }
+        this.in_orden(this.raiz,des);
+    }
+    in_orden(nodo,des){
+        if(nodo!=null){
+            if(des){
+                this.in_orden(nodo.izquierda,des);
+            }else{
+                this.in_orden(nodo.izquierda);
+            }
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            td.innerHTML = nodo.valor.nombre_pelicula;
+            tr.append(td);
+            var td1 = document.createElement("td");
+            td1.innerHTML = nodo.valor.descripcion;
+            tr.append(td1);
+            var td2 = document.createElement("td");
+            var info = document.createElement("button");
+            info.innerHTML = "Info";
+            info.className = "btn btn-info";
+            info.type = "button";
+            td2.append(info);
+            tr.append(td2);
+            var td3 = document.createElement("td");
+            var cart = document.createElement("button");
+            cart.innerHTML = "Alquilar";
+            cart.className = "btn btn-secondary";
+            cart.type = "button";
+            td3.append(cart);
+            tr.append(td3);
+            var td4 = document.createElement("td");
+            td4.innerHTML = "Q"+ nodo.valor.precion_Q;
+            tr.append(td4);
+            if(des){
+                document.getElementById("containerPelis").prepend(tr);
+            }else{
+                document.getElementById("containerPelis").append(tr);
+            }
+            if(des){
+                this.in_orden(nodo.derecha,des);
+            }else{
+                this.in_orden(nodo.derecha);
+            }
+        }
+    }
+
+    graficarAVL(){
+        var codigodot = "digraph grafica{\n" +
+        "rankdir=TB;\n" +
+        "node [shape = record, style=filled, fillcolor=seashell2];\n";
+        codigodot += this.getCodigoInterno(this.raiz);
+        codigodot += "}\n";
+        d3.select("#lienzo").graphviz()
+            .width(900)
+            .height(500)
+            .renderDot(codigodot)
+    }
+
+    getCodigoInterno(nodo) {
+        var etiqueta;
+        if(nodo.izquierda==null && nodo.derecha==null){
+            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\""+nodo.valor.nombre_pelicula+"\"];\n";
+        }else{
+            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\"<C0>|"+nodo.valor.nombre_pelicula+"|<C1>\"];\n";
+        }
+        if(nodo.izquierda!=null){
+            etiqueta=etiqueta + this.getCodigoInterno(nodo.izquierda) +
+               "nodo"+nodo.valor.id_pelicula+":C0->nodo"+nodo.izquierda.valor.id_pelicula+"\n";
+        }
+        if(nodo.derecha!=null){
+            etiqueta=etiqueta +  this.getCodigoInterno(nodo.derecha) +
+               "nodo"+nodo.valor.id_pelicula+":C1->nodo"+nodo.derecha.valor.id_pelicula+"\n";                    
+        }
+        return etiqueta;
+    }        
+}
+
+class Pelicula{
+    constructor(_id_pelicula,_nombre_pelicula,_descripcion,_puntuacion_star,_precion_Q,_paginas,_categoria){
+        this.id_pelicula = _id_pelicula
+        this.nombre_pelicula = _nombre_pelicula
+        this.descripcion = _descripcion
+        this.puntuacion_star = _puntuacion_star
+        this.precion_Q = _precion_Q
+        this.paginas = _paginas
+        this.categoria = _categoria
+    }
+}
+
+function renderAVL() {
+    arbolavl.graficarAVL();
+}
+
+function ordenPelis() {
+    var x = document.getElementById("selectPelis").value;
+    if(x == "Ascendente"){
+        arbolavl.inorden();
+    }else{
+        arbolavl.inorden("des");
+    }
+}
+
+//Arbol Binario
+class NodoABB{
+    constructor(_valor){
+        this.valor=_valor;
+        this.izquierda = null;
+        this.derecha = null;
+    }
+}
+
+class ABB{
+    constructor(){
+        this.raiz = null;
+    }
+    //metodo insertar
+    insertar(_valor){
+        this.raiz = this.add(_valor, this.raiz);
+    }
+    //metodo insertar recursivo
+    add(_valor, nodo){
+        if(nodo == null){
+            return new NodoABB(_valor);
+        }else{
+            if(_valor.dni > nodo.valor.dni){
+                nodo.derecha = this.add(_valor, nodo.derecha);
+            }else{
+                nodo.izquierda = this.add(_valor, nodo.izquierda);
+            }
+        }
+        return nodo;
+    }
+    
+    //preorden
+    preorden(){
+        this.pre_orden(this.raiz);
+    }
+
+    pre_orden(nodo){
+        if(nodo!=null){
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            td.innerHTML = nodo.valor.dni;
+            tr.append(td);
+            var td1 = document.createElement("td");
+            td1.innerHTML = nodo.valor.nombre_actor;
+            tr.append(td1);
+            var td2 = document.createElement("td");
+            td2.innerHTML = nodo.valor.descripcion;
+            tr.append(td2);
+            document.getElementById("containerActores").append(tr);
+            this.pre_orden(nodo.izquierda);
+            this.pre_orden(nodo.derecha);
+        }
+    }
+    //inorden
+    inorden(){
+        this.in_orden(this.raiz);
+    }
+    
+    in_orden(nodo){
+        if(nodo!=null){
+            this.in_orden(nodo.izquierda);
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            td.innerHTML = nodo.valor.dni;
+            tr.append(td);
+            var td1 = document.createElement("td");
+            td1.innerHTML = nodo.valor.nombre_actor;
+            tr.append(td1);
+            var td2 = document.createElement("td");
+            td2.innerHTML = nodo.valor.descripcion;
+            tr.append(td2);
+            document.getElementById("containerActores").append(tr);
+            this.in_orden(nodo.derecha);
+        }
+    }
+
+    //postorden
+    posorden(){
+        this.pos_orden(this.raiz);
+    }
+    
+    pos_orden(nodo){
+        if(nodo!=null){
+            this.pos_orden(nodo.izquierda);
+            this.pos_orden(nodo.derecha);
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            td.innerHTML = nodo.valor.dni;
+            tr.append(td);
+            var td1 = document.createElement("td");
+            td1.innerHTML = nodo.valor.nombre_actor;
+            tr.append(td1);
+            var td2 = document.createElement("td");
+            td2.innerHTML = nodo.valor.descripcion;
+            tr.append(td2);
+            document.getElementById("containerActores").append(tr);         
+        }
+    }
+
+    graficarABB(){
+        var codigodot = "digraph grafica{\n" +
+        "rankdir=TB;\n" +
+        "node [shape = record, style=filled, fillcolor=seashell2];\n";
+        codigodot += this.getCodigoInterno(this.raiz);
+        codigodot += "}\n";
+        d3.select("#lienzo").graphviz()
+            .width(900)
+            .height(500)
+            .renderDot(codigodot)
+    }
+
+    getCodigoInterno(nodo) {
+        var etiqueta;
+        if(nodo.izquierda==null && nodo.derecha==null){
+            etiqueta="nodo"+nodo.valor.dni+" [ label =\""+nodo.valor.nombre_actor+"\"];\n";
+        }else{
+            etiqueta="nodo"+nodo.valor.dni+" [ label =\"<C0>|"+nodo.valor.nombre_actor+"|<C1>\"];\n";
+        }
+        if(nodo.izquierda!=null){
+            etiqueta=etiqueta + this.getCodigoInterno(nodo.izquierda) +
+               "nodo"+nodo.valor.dni+":C0->nodo"+nodo.izquierda.valor.dni+"\n";
+        }
+        if(nodo.derecha!=null){
+            etiqueta=etiqueta +  this.getCodigoInterno(nodo.derecha) +
+               "nodo"+nodo.valor.dni+":C1->nodo"+nodo.derecha.valor.dni+"\n";                    
+        }
+        return etiqueta;
+    } 
+}
+
+class Actor{
+    constructor(_dni,_nombre_actor,_correo,_descripcion){
+        this.dni = _dni
+        this.nombre_actor = _nombre_actor
+        this.correo = _correo
+        this.descripcion = _descripcion
+    }
+}
+
+function renderABB() {
+    arbolabb.graficarABB();
+}
+
+function ordenActores() {
+    var x = document.getElementById("selectActores").value;
+    var parent = document.getElementById("containerActores");
+    while (parent.firstChild) {
+        parent.firstChild.remove();
+    }
+    if(x == "inorden"){
+        arbolabb.inorden();
+    }else if(x == "posorden"){
+        arbolabb.posorden();
+    }else if(x == "preorden"){
+        arbolabb.preorden();
+    }
+}
+
 var listaClientes = new Listasimple();
+var arbolavl = new AVL();
+var arbolabb = new ABB();

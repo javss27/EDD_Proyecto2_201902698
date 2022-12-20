@@ -31,19 +31,19 @@
         <button type="button" class="btn btn-danger ml-auto" onclick = "cerrarSesion()">Cerrar sesion</button>
         <h1>Administrador</h1>
         <h4>Carga películas</h4>
-        <input class="my-2" type="file" id="file-pelis" accept=".json" onchange='openFile(event)'>
+        <input class="my-2" type="file" id="file-pelis" accept=".json" onchange='openFileAVL(event)'>
         <h4>Carga clientes</h4>
-        <input class="my-2" type="file" id="file-clientes" accept=".json" onchange='openFile(event)'>
+        <input class="my-2" type="file" id="file-clientes" accept=".json" onchange='openFileSimple(event)'>
         <h4>Carga actores</h4>
-        <input class="my-2" type="file" id="file-actores" accept=".json" onchange='openFile(event)'>
+        <input class="my-2" type="file" id="file-actores" accept=".json" onchange='openFileABB(event)'>
         <h4>Carga categorías</h4>
         <input class="my-2" type="file" id="file-categorias" accept=".json" onchange='openFile(event)'>
 
         <h2>Estructuras</h2>
             <div>
-                <button type="button" class="btn btn-info" onclick = "render()">Grafo películas</button>
-                <button type="button" class="btn btn-info" onclick = "render()">Grafo clientes</button>
-                <button type="button" class="btn btn-info" onclick = "render()">Grafo actores</button>
+                <button type="button" class="btn btn-info" onclick = "renderAVL()">Grafo películas</button>
+                <button type="button" class="btn btn-info" onclick = "renderSimple()">Grafo clientes</button>
+                <button type="button" class="btn btn-info" onclick = "renderABB()">Grafo actores</button>
                 <button type="button" class="btn btn-info" onclick = "render()">Grafo categorías</button>
                 <button type="button" class="btn btn-warning" onclick = "downloadimage()">Descargar grafo</button>
             </div>
@@ -53,7 +53,54 @@
     <!-- Inicio Cliente -->
     <div id="divCliente" style="display: none; justify-content: center; align-items: center; margin-top: 3%;">
         <button type="button" class="btn btn-danger ml-auto" onclick = "cerrarSesion()">Cerrar sesion</button>
-        <h1>Cliente</h1>
+        <h1>Moviecats</h1>
+        <div class="my-2" style="margin-left: auto;">
+            <button type="button" class="btn btn-primary" onclick = "vistaUsuario('peliculas')">Ver peliculas</button>
+            <button type="button" class="btn btn-primary" onclick = "vistaUsuario('actores')">Ver actores</button>
+            <button type="button" class="btn btn-primary" onclick = "vistaUsuario('categorias')">Ver categorias</button>
+        </div>
+        <div id="divPelis">
+            <h4>Peliculas</h4>
+            <select class="form-select" aria-label="Default select example" id="selectPelis" onchange="ordenPelis()">
+                <option value="Ascendente">Ascendente</option>
+                <option value="Descendente">Descendente</option>
+              </select>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Titulo</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Informacion</th>
+                    <th scope="col">Alquilar</th>
+                    <th scope="col">Precio</th>
+                  </tr>
+                </thead>
+                <tbody id="containerPelis">
+                </tbody>
+              </table>
+        </div>
+        <div id="divActores" style="display: none;">
+            <h4>Actores</h4>
+            <select class="form-select" aria-label="Default select example" id="selectActores" onchange="ordenActores()">
+                <option value="inorden">inorden</option>
+                <option value="preorden">preorden</option>
+                <option value="posorden">posorden</option>
+            </select>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Descripcion</th>
+                  </tr>
+                </thead>
+                <tbody id="containerActores">
+                </tbody>
+              </table>
+        </div>
+        <div id="divCategorias" style="display: none;">
+            <h4>Categorias</h4>
+        </div>
     </div>
 
 
