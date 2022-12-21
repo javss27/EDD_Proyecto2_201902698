@@ -4,7 +4,7 @@ function login() {
     var password = document.getElementById("exampleInputPassword1").value;
     var checked = document.getElementById("exampleCheck1").checked;
     if(checked){
-        if(usuario == "" && password ==""){
+        if(usuario == "EDD" && password == "12345678"){
             document.getElementById("divLogin").style.display = "none";
             document.getElementById("divCliente").style.display = "none";
             document.getElementById("divAdmin").style.display = "grid";
@@ -84,6 +84,21 @@ function openFileABB(event) {
         arbolabb.insertar(nuevoActor)
     });
     arbolabb.inorden();
+    };
+    reader.readAsText(input.files[0]);
+}
+
+function openFileHash(event) {
+    var input = event.target;
+    var reader = new FileReader();
+    reader.onload = function() {
+      var text = reader.result;
+      var json = JSON.parse(text);
+      json.forEach(function(categoria) {
+        var nuevaCategoria = new Categoria(categoria.id_categoria, categoria.company);
+        tablaHash.insertar(nuevaCategoria)
+    });
+    tablaHash.recorrer();
     };
     reader.readAsText(input.files[0]);
 }
@@ -285,12 +300,24 @@ class AVL{
             info.innerHTML = "Info";
             info.className = "btn btn-info";
             info.type = "button";
+            info.onclick = function(){
+                document.getElementById("exampleModalLabel").innerHTML = nodo.valor.nombre_pelicula;
+                document.getElementById("exampleModalLabelDes").innerHTML = nodo.valor.descripcion;
+                document.getElementById("exampleModalLabelPunt").innerHTML = "Puntuacion: " + nodo.valor.puntuacion_star;
+                return false;
+            };
+            info.dataset.toggle = "modal";
+            info.dataset.target = "#exampleModal";
             td2.append(info);
             tr.append(td2);
             var td3 = document.createElement("td");
             var cart = document.createElement("button");
             cart.innerHTML = "Alquilar";
             cart.className = "btn btn-secondary";
+            cart.onclick = function(){
+                alert('Se alquilo la pelicula: ' + nodo.valor.nombre_pelicula);
+                return false;
+            };
             cart.type = "button";
             td3.append(cart);
             tr.append(td3);
@@ -364,6 +391,10 @@ function ordenPelis() {
     }else{
         arbolavl.inorden("des");
     }
+}
+
+function Alquilar() {
+    alert("Pelicula alquilada");
 }
 
 //Arbol Binario
@@ -524,6 +555,141 @@ function ordenActores() {
     }
 }
 
+// Tabla hash
+class TablaHash{
+    constructor(){
+        this.content = [];
+        this.content.length = 20;
+    }
+
+    insertar(value){
+        var key = value.id_categoria % this.content.length;
+        this.add(key, value);
+    }
+
+    add(key, value){
+        //Insertar
+        if(this.content[key] == undefined){
+            this.content[key] = value;
+        }else{
+            var temp = [];
+            if(this.content[key].length){
+                this.content[key].forEach(element => {
+                    temp.push(element);
+                });
+            }else{
+                temp.push(this.content[key]);
+            }
+            temp.push(value);
+            this.content[key] = temp;
+        }
+        //Aumentar tamano
+        var cont = 0;
+        this.content.forEach(element => {
+            if(element){
+                cont++;
+            }
+            if(cont >= (this.content.length*0.75)){
+                //Rehashing
+                var temporal = this.content;
+                var nuevoTam = this.content.length + 5;
+                this.content = [];
+                this.content.length = nuevoTam;
+                temporal.forEach(element => {
+                    if(element.length){
+                        element.forEach(element2 => {
+                            this.insertar(element2);
+                        });
+                    }else{
+                        this.insertar(element);
+                    }
+                });
+                return false;
+            }
+        });
+    }
+
+    recorrer(){
+        this.content.forEach(element => {
+            if(element.length){
+                element.forEach(element2 => {
+                    var tr = document.createElement("tr");
+                    var td = document.createElement("td");
+                    td.innerHTML = element2.id_categoria;
+                    tr.append(td);
+                    var td1 = document.createElement("td");
+                    td1.innerHTML = element2.company;
+                    tr.append(td1);
+                    document.getElementById("containerCategoria").append(tr);
+                });
+            }else{
+                var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                td.innerHTML = element.id_categoria;
+                tr.append(td);
+                var td1 = document.createElement("td");
+                td1.innerHTML = element.company;
+                tr.append(td1);
+                document.getElementById("containerCategoria").append(tr);
+            }
+        });
+    }
+
+    graficarHash(){
+        var codigodot = "digraph G {\n" +
+        "nodesep=.05;\n" +
+        "rankdir=LR;\n" +
+        "node [shape=record,width=.1,height=.1];\n"+
+        "node0 [label = \"";
+        for (let index = 0; index < this.content.length-1; index++) {
+            codigodot += "<f"+index+"> "+(index+1)+" |";
+        }
+        codigodot += this.content.length + "\",height=2.5];\n";
+        var cont = 0;
+        for (let index = 0; index < this.content.length; index++) {
+            const element = this.content[index];
+            if (element) {
+                cont++;
+                if(element.length){
+                    for (let index2 = 0; index2 < element.length; index2++) {
+                        const element2 = element[index2];
+                        if (index2==0) {
+                            codigodot += "node"+cont+" [label = \"{<n> " + element2.id_categoria + " |<p> }\"];\n";
+                            codigodot += "node0:f"+index+" -> node"+cont+":n;\n";
+                            cont++;
+                        }else{
+                            codigodot += "node"+cont+" [label = \"{<n> " + element2.id_categoria + " |<p> }\"];\n";
+                            codigodot += "node"+(cont-1)+":p -> node"+cont+":n;\n";
+                            cont++;
+                        }
+                    }
+                }else{
+                    codigodot += "node"+cont+" [label = \"{<n> " + element.id_categoria + " |<p> }\"];\n";
+                    codigodot += "node0:f"+index+" -> node"+cont+":n;\n";
+                }
+            }
+        }
+        codigodot += "}\n";
+        d3.select("#lienzo").graphviz()
+            .width(900)
+            .height(500)
+            .renderDot(codigodot)
+    }
+
+}
+
+class Categoria{
+    constructor(_id_categoria,_company){
+        this.id_categoria = _id_categoria
+        this.company = _company
+    }
+}
+
+function renderHash() {
+    tablaHash.graficarHash();
+}
+
 var listaClientes = new Listasimple();
 var arbolavl = new AVL();
 var arbolabb = new ABB();
+var tablaHash = new TablaHash();
