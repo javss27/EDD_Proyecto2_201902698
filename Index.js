@@ -23,6 +23,8 @@ function login() {
 }
 
 function cerrarSesion() {
+    document.getElementById("exampleInputEmail1").value = "";
+    document.getElementById("exampleInputPassword1").value = "";
     document.getElementById("divLogin").style.display = "flex";
     document.getElementById("divAdmin").style.display = "none";
     document.getElementById("divCliente").style.display = "none";
@@ -272,7 +274,21 @@ class AVL{
         nodo.izquierda = this.rotacionderecha(nodo.izquierda);
         return this.rotacionizquierda(nodo);
     }
-
+    //recorridos
+    cambiarPuntuacion(idCambio,nuevaPuntuacion){
+        this.pre_orden(this.raiz,idCambio,nuevaPuntuacion);
+    }
+    pre_orden(nodo,idCambio,nuevaPuntuacion){
+        if(nodo!=null){
+            if(idCambio == nodo.valor.id_pelicula){
+                nodo.valor.puntuacion_star = nuevaPuntuacion;
+                this.inorden();
+                return false;
+            }
+            this.pre_orden(nodo.izquierda,idCambio,nuevaPuntuacion);
+            this.pre_orden(nodo.derecha,idCambio,nuevaPuntuacion);
+        }
+    }
     //inorden
     inorden(des){
         var parent = document.getElementById("containerPelis");
@@ -301,6 +317,7 @@ class AVL{
             info.className = "btn btn-info";
             info.type = "button";
             info.onclick = function(){
+                document.getElementById("exampleModalLabelID").innerHTML = nodo.valor.id_pelicula;
                 document.getElementById("exampleModalLabel").innerHTML = nodo.valor.nombre_pelicula;
                 document.getElementById("exampleModalLabelDes").innerHTML = nodo.valor.descripcion;
                 document.getElementById("exampleModalLabelPunt").innerHTML = "Puntuacion: " + nodo.valor.puntuacion_star;
@@ -395,6 +412,15 @@ function ordenPelis() {
 
 function Alquilar() {
     alert("Pelicula alquilada");
+}
+
+function cambiarPuntuacionPeli() {
+    var idCambio = document.getElementById("exampleModalLabelID").innerHTML;
+    var nuevaPuntuacion = document.getElementById("valueLabelPunt").value;
+    arbolavl.cambiarPuntuacion(idCambio,nuevaPuntuacion);
+    document.getElementById("valueLabelPunt").value = "";
+    document.getElementById("exampleModalLabelPunt").innerHTML = "Puntuacion: " + nuevaPuntuacion;
+    alert("Puntuacion cambiada");
 }
 
 //Arbol Binario

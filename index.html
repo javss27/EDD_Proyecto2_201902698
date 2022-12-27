@@ -124,8 +124,15 @@
               </button>
             </div>
             <div class="modal-body" style="display: grid;">
-              <span id="exampleModalLabelDes"></span>
+              <span id="exampleModalLabelID"></span>
+              <span id="exampleModalLabelDes" class="mt-3"></span>
               <span id="exampleModalLabelPunt" class="mt-3"></span>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <button class="btn btn-outline-secondary" type="button" onclick="cambiarPuntuacionPeli()">Cambiar puntuacion</button>
+                </div>
+                <input type="text" class="form-control" placeholder="" aria-label="" id="valueLabelPunt" aria-describedby="basic-addon1">
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
