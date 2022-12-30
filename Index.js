@@ -203,18 +203,17 @@ class AVL{
     //insertar
     insertar(valor){
         this.raiz = this.add(valor,this.raiz)
-
     }
     //insertar recursivo
     add(valor, nodo){
         if(nodo == null) return new NodoAVL(valor);
         else{
-            if(valor.nombre_pelicula < nodo.valor.nombre_pelicula){
+            if(valor.id_pelicula < nodo.valor.id_pelicula){
                 nodo.izquierda = this.add(valor, nodo.izquierda)
                 if(this.altura(nodo.derecha)-this.altura(nodo.izquierda) == -2){
                     //programar los casos 
                     //rsi
-                    if(valor.nombre_pelicula < nodo.izquierda.valor.nombre_pelicula){
+                    if(valor.id_pelicula < nodo.izquierda.valor.id_pelicula){
                         nodo = this.rotacionizquierda(nodo);
                     }//rdi}
                     else{
@@ -222,12 +221,12 @@ class AVL{
                     }
                     
                 }
-            }else if(valor.nombre_pelicula > nodo.valor.nombre_pelicula){
+            }else if(valor.id_pelicula > nodo.valor.id_pelicula){
                 nodo.derecha = this.add(valor, nodo.derecha);
                 if(this.altura(nodo.derecha)-this.altura(nodo.izquierda)== 2){
                     //otros dos casos
                     //rotacion simple derecha
-                    if(valor.nombre_pelicula > nodo.derecha.valor.nombre_pelicula){
+                    if(valor.id_pelicula > nodo.derecha.valor.id_pelicula){
                         nodo = this.rotacionderecha(nodo);
                     }else{
                         nodo = this.Rotaciondoblederecha(nodo);
@@ -249,7 +248,7 @@ class AVL{
         nodo.izquierda = aux.derecha;
         aux.derecha = nodo;
         //calculo de nueva altura
-        nodo.altura = this.MAXIMO(this.altura(nodo.derecha),this.altura(nodo.izquierda))+1;
+        nodo.altura = this.MAXIMO(this.altura(nodo.izquierda),this.altura(nodo.derecha))+1;
         aux.altura = this.MAXIMO(this.altura(nodo.izquierda), nodo.altura)+1;
         return aux;
     }
@@ -259,7 +258,7 @@ class AVL{
         nodo.derecha = aux.izquierda;
         aux.izquierda = nodo;
         //calcular de nuevo altura
-        nodo.altura = this.MAXIMO(this.altura(nodo.derecha),this.altura(nodo.izquierda))+1;
+        nodo.altura = this.MAXIMO(this.altura(nodo.izquierda),this.altura(nodo.derecha))+1;
         aux.altura = this.MAXIMO(this.altura(nodo.derecha),nodo.altura)+1;
         return aux;
     }
