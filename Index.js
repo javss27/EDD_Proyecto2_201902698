@@ -369,9 +369,9 @@ class AVL{
     getCodigoInterno(nodo) {
         var etiqueta;
         if(nodo.izquierda==null && nodo.derecha==null){
-            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\""+nodo.valor.nombre_pelicula+"\"];\n";
+            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\""+nodo.valor.id_pelicula+"\"];\n";
         }else{
-            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\"<C0>|"+nodo.valor.nombre_pelicula+"|<C1>\"];\n";
+            etiqueta="nodo"+nodo.valor.id_pelicula+" [ label =\"<C0>|"+nodo.valor.id_pelicula+"|<C1>\"];\n";
         }
         if(nodo.izquierda!=null){
             etiqueta=etiqueta + this.getCodigoInterno(nodo.izquierda) +
@@ -537,9 +537,9 @@ class ABB{
     getCodigoInterno(nodo) {
         var etiqueta;
         if(nodo.izquierda==null && nodo.derecha==null){
-            etiqueta="nodo"+nodo.valor.dni+" [ label =\""+nodo.valor.nombre_actor+"\"];\n";
+            etiqueta="nodo"+nodo.valor.dni+" [ label =\""+nodo.valor.dni+"\"];\n";
         }else{
-            etiqueta="nodo"+nodo.valor.dni+" [ label =\"<C0>|"+nodo.valor.nombre_actor+"|<C1>\"];\n";
+            etiqueta="nodo"+nodo.valor.dni+" [ label =\"<C0>|"+nodo.valor.dni+"|<C1>\"];\n";
         }
         if(nodo.izquierda!=null){
             etiqueta=etiqueta + this.getCodigoInterno(nodo.izquierda) +
